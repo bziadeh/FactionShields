@@ -1,0 +1,109 @@
+#######################################################################
+#                                                                     #
+#                  FactionShields Configuration File                  #
+#                                                                     #
+#######################################################################
+
+# What timezone will this plugin use?
+timezone: EST
+
+# The shield duration in hours.
+shield-duration: 8
+
+# General messages.
+no-permission: '&cYou do not have permission.'
+invalid-syntax: '&cInvalid syntax, please try again.'
+
+# Shield messages.
+no-faction: '&cYou must be in a faction to do this.'
+no-faction-permission: '&cYou must be a higher rank to do this.'
+
+#######################################################################
+#                                                                     #
+#                   Shield Inventory / Gui Settings                   #
+#                                                                     #
+#######################################################################
+
+inventory:
+  # Basic inventory settings.
+  title: 'Faction Shield'
+  size: 54
+  selected-background: BEDROCK
+  selected-time: EMERALD_BLOCK
+
+  # The type of the buttons, and the border color.
+  item-types: WATCH
+  border: BLACK
+
+  # Should the items ignore sides? Where should the background end?
+  ignore-sides: false
+  stop-background: 44
+
+  # The names and lores of the buttons.
+  names: '&7&a%time%'
+  lores: ''
+
+  # The start and end of the buttons.
+  start-slot: 9
+  end-slot: 32
+
+  # Information button.
+  info-button:
+    enabled: true
+    type: PAPER
+    name: '&d&nShield Information'
+    slot: 45
+    lore:
+    - ''
+    - '&7Select the time that your &dfaction shield&7 will be'
+    - '&7activated each day.'
+    - ''
+    - '&7The shield duration is currently: &d%duration%.'
+    - '&7Once you select your shield, you cannot reset it.'
+    - ''
+    - '%status%'
+  # Shields button.
+  shields-button:
+    enabled: true
+    type: BOOK
+    name: '&d&nActive Shields'
+    slot: 46
+    lore:
+    - ''
+    - '&7Click to view all &dactive&7 faction shields.'
+    - '&7Here you can view the &dremaining time(s)&7 for other shields.'
+
+#######################################################################
+#                                                                     #
+#                     Confirmation Menu Settings                      #
+#                                                                     #
+#######################################################################
+
+confirm-menu:
+  title: 'Confirmation Menu'
+  size: 27
+  fill: true
+  items:
+    11:
+      action: CANCEL
+      type: WOOL
+      color: RED
+      name: '&7Cancel'
+      lore:
+      - '&cClick to cancel.'
+    13:
+      type: PAPER
+      name: '&7Information'
+      lore:
+      - '&aAre you sure you want to lock in &7%time%'
+      - '&afor your shield time?'
+      - ''
+      - '&aPlease select one of the options listed'
+      - '&ato complete this process.'
+    15:
+      action: CONFIRM
+      type: WOOL
+      color: GREEN
+      name: '&7Confirm'
+      lore:
+      - '&aClick to confirm this shield.'

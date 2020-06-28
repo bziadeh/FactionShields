@@ -1,0 +1,159 @@
+#######################################################################
+#                                                                     #
+#                  FactionShields Configuration File                  #
+#                                                                     #
+#######################################################################
+
+# What timezone will this plugin use?
+timezone: EST
+
+# The shield duration in hours.
+shield-duration: 8
+
+# General messages.
+no-permission: '&cYou do not have permission.'
+invalid-syntax: '&cInvalid syntax, please try again.'
+
+# Shield messages.
+no-faction: '&cYou must be in a faction to do this.'
+no-faction-permission: '&cYou must be a higher rank to do this.'
+
+# Shield lookup (/f shield <faction>)
+shield-lookup: '&e(%faction%) &7Shield activation hours: &e%start%&f &m--&r> &e%end%&7 (%timezone%)'
+shield-lookup-failed: '&cThe specified faction has no shield set.'
+
+# Shield title settings.
+shield-title: '&7Faction Shield'
+shield-active: '&aYour faction shield is now active.'
+shield-inactive: '&cYour faction shield is no longer active.'
+
+# Region messages.
+region-set: '&aSuccessfully setup your shield region.'
+region-set-failure: '&cYou must be in your own land to set the shield region.'
+region-shield-failure: '&cYou must select your shield activation hours first.'
+region-already-set: '&cYour shield region is already set.'
+
+# The region required information message.
+region-required:
+- ''
+- '&7Now you must set your &a&lshield region&7'
+- ''
+- '&7Stand in your desired base claims, and type &a&l/f setregion'
+- ''
+- '&7All &a&lconnected&7 claimed chunks will be included'
+- ''
+
+# How often are faction shields backed up incase of a server crash? (default: every 15 minutes)
+backup-interval: 15
+
+#######################################################################
+#                                                                     #
+#                   Shield Inventory / Gui Settings                   #
+#                                                                     #
+#######################################################################
+
+inventory:
+  # Basic inventory settings.
+  title: 'Faction Shield'
+  size: 54
+  selected-background: BEDROCK
+  selected-time: EMERALD_BLOCK
+
+  # The type of the buttons, and the border color.
+  item-types: STAINED_GLASS_PANE
+  border: BLACK
+
+  # Should the items ignore sides? Where should the background end?
+  ignore-sides: false
+  stop-background: 44
+
+  # The names and lores of the buttons.
+  names: '&r'
+  lores:
+  - '&aClick to set your shield activation hours to'
+  - '&e%time%&f &m---&r> &e%end%'
+  - ''
+  - '&fShield Duration:'
+  - '&f(&e%duration% hours total&f)'
+
+
+  # The start and end of the buttons.
+  start-slot: 9
+  end-slot: 32
+
+  # Information button.
+  info-button:
+    enabled: true
+    type: PAPER
+    name: '&d&nShield Information'
+    slot: 45
+    lore:
+    - ''
+    - '&7Select the time that your &dfaction shield&7 will be'
+    - '&7activated each day.'
+    - ''
+    - '&7The shield duration is currently: &d%duration%.'
+    - '&7Once you select your shield, you cannot reset it.'
+    - ''
+    - '%status%'
+  # Shields button.
+  shields-button:
+    enabled: true
+    type: BOOK
+    name: '&d&nActive Shields'
+    slot: 46
+    lore:
+    - ''
+    - '&7Click to view all &dactive&7 faction shields.'
+    - '&7Here you can view the &dremaining times&7 for other shields.'
+
+#######################################################################
+#                                                                     #
+#                     Confirmation Menu Settings                      #
+#                                                                     #
+#######################################################################
+
+confirm-menu:
+  title: 'Confirmation Menu'
+  size: 27
+  fill: true
+  items:
+    11:
+      action: CANCEL
+      type: WOOL
+      color: RED
+      name: '&7Cancel'
+      lore:
+      - '&cClick to cancel.'
+    13:
+      type: PAPER
+      name: '&7Information'
+      lore:
+      - '&aAre you sure you want to lock in &7%time%'
+      - '&afor your shield time?'
+      - ''
+      - '&aPlease select one of the options listed'
+      - '&ato complete this process.'
+    15:
+      action: CONFIRM
+      type: WOOL
+      color: GREEN
+      name: '&7Confirm'
+      lore:
+      - '&aClick to confirm this shield.'
+
+
+#######################################################################
+#                                                                     #
+#                     Shields List Menu Settings                      #
+#                                                                     #
+#######################################################################
+
+list-menu:
+  title: 'Faction Shields List'
+  size: 54
+  fill: true
+  name: '&6Faction: &f%faction%'
+  lore:
+  - ''
+  - '&aACTIVE &8- &r%status%'

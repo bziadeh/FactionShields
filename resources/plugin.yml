@@ -1,0 +1,8 @@
+name: FactionShields
+main: com.cloth.FactionShieldsPlugin
+author: Cloth
+version: 0.0.7
+commands:
+  factionshield:
+    description: Opens the faction shield GUI.
+    aliases: [fs]
