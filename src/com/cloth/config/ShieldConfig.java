@@ -18,7 +18,18 @@ public class ShieldConfig {
     public static int SHIELD_DURATION;
     public static String NO_PERMISSION;
     public static String INVALID_SYNTAX;
+    public static String PLAYER_NOT_FOUND;
+    public static String FACTION_NOT_FOUND;
     public static int SHIELD_BACKUP_INTERVAL;
+
+    // Shield reset settings.
+    public static int SHIELD_RESET_COOLDOWN;
+    public static String SHIELD_RESET_FAIL;
+    public static String SHIELD_RESET_SUCCESS;
+    public static int SHIELD_RESET_RADIUS;
+    public static String SHIELD_RESET_PREVENT;
+    public static String SHIELD_FORCE_RESET;
+    public static String SHIELD_RESET_ALL;
 
     // Shield messages.
     public static String NO_FACTION;
@@ -50,6 +61,11 @@ public class ShieldConfig {
     public static boolean IGNORE_SIDES;
     public static int STOP_BACKGROUND;
 
+    // Placeholder settings.
+    public static String PLACEHOLDER_SHIELD_ACTIVE;
+    public static String PLACEHOLDER_SHIELD_INACTIVE;
+    public static String PLACEHOLDER_SHIELD_NONE;
+
     private ShieldConfig() {
         // Private constructor, make sure this class is only initialized once.
         FactionShieldsPlugin.getInstance().saveDefaultConfig();
@@ -65,7 +81,18 @@ public class ShieldConfig {
             SHIELD_DURATION = getInt("shield-duration");
             NO_PERMISSION = getString("no-permission");
             INVALID_SYNTAX = getString("invalid-syntax");
+            PLAYER_NOT_FOUND = getString("player-not-found");
+            FACTION_NOT_FOUND = getString("faction-not-found");
             SHIELD_BACKUP_INTERVAL = getInt("backup-interval");
+
+            // Shield reset settings.
+            SHIELD_RESET_COOLDOWN = getInt("shield-reset-cooldown");
+            SHIELD_RESET_FAIL = getString("shield-reset-fail");
+            SHIELD_RESET_SUCCESS = getString("shield-reset-success");
+            SHIELD_RESET_RADIUS = getInt("shield-reset-radius");
+            SHIELD_RESET_PREVENT = getString("shield-reset-prevent");
+            SHIELD_FORCE_RESET = getString("shield-force-reset");
+            SHIELD_RESET_ALL = getString("shield-reset-all");
 
             // Shield messages.
             NO_FACTION = getString("no-faction");
@@ -96,6 +123,11 @@ public class ShieldConfig {
             END_SLOT = getInt("inventory.end-slot");
             IGNORE_SIDES = getBoolean("inventory.ignore-sides");
             STOP_BACKGROUND = getInt("inventory.stop-background");
+
+            // Placeholder settings.
+            PLACEHOLDER_SHIELD_ACTIVE = getString("placeholder-shield-active");
+            PLACEHOLDER_SHIELD_INACTIVE = getString("placeholder-shield-inactive");
+            PLACEHOLDER_SHIELD_NONE = getString("placeholder-shield-none");
         });
     }
 

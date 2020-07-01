@@ -10,9 +10,24 @@ timezone: EST
 # The shield duration in hours.
 shield-duration: 8
 
+# How long (in hours) must a faction wait before they can reset their shield?
+shield-reset-cooldown: 24
+shield-reset-fail: '&cYou must wait another %time% before resetting.'
+shield-reset-success: '&aSuccessfully removed your faction shield.'
+
+# Reset settings for admins. (permission: factionshields.admin)
+shield-force-reset: '&aYou have force reset the the shield for: &f%faction%'
+shield-reset-all: '&aYou have reset all faction shields.'
+
+# If enemy players are within 'x' blocks of the shield region, prevent shield reset.
+shield-reset-radius: 100
+shield-reset-prevent: '&cYou cannot reset your shield with enemies nearby.'
+
 # General messages.
 no-permission: '&cYou do not have permission.'
 invalid-syntax: '&cInvalid syntax, please try again.'
+player-not-found: '&cUnable to find the specified player.'
+faction-not-found: '&cUnable to find the specified faction.'
 
 # Shield messages.
 no-faction: '&cYou must be in a faction to do this.'
@@ -142,7 +157,6 @@ confirm-menu:
       lore:
       - '&aClick to confirm this shield.'
 
-
 #######################################################################
 #                                                                     #
 #                     Shields List Menu Settings                      #
@@ -157,3 +171,15 @@ list-menu:
   lore:
   - ''
   - '&aACTIVE &8- &r%status%'
+
+#######################################################################
+#                                                                     #
+#                       PlaceholderAPI Settings                       #
+#                                                                     #
+#######################################################################
+
+# Use the placeholder %factionshields_factionName% to
+# display shield information.
+placeholder-shield-active: '&a&lACTIVE &7(Disables: %end%)'
+placeholder-shield-inactive: '&c&lDISABLED &7(Enables: %time%)'
+placeholder-shield-none: '&7none selected'

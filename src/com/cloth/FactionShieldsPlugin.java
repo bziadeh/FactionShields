@@ -2,9 +2,11 @@ package com.cloth;
 
 import com.cloth.config.ShieldConfig;
 import com.cloth.inventory.InventoryHandler;
+import com.cloth.papi.ShieldExpansion;
 import com.cloth.shield.FactionEventCmd;
 import com.cloth.shield.ShieldCmd;
 import com.cloth.shield.ShieldHandler;
+import org.bukkit.Bukkit;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +22,11 @@ public class FactionShieldsPlugin extends JavaPlugin {
     private InventoryHandler inventoryHandler;
 
     public void onEnable() {
+        // Register placeholders.
+        if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+            new ShieldExpansion().register();
+        }
+
         instance = this;
 
         // Startup thread.

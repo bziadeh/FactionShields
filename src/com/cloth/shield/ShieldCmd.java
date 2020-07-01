@@ -36,7 +36,7 @@ public class ShieldCmd implements CommandExecutor {
 
         // If the user did not specify a faction name.
         if(args.length < 1) {
-            if(!hasFaction(fplayer)) {
+            if(!shieldHandler.hasFaction(fplayer)) {
                 player.sendMessage(ShieldConfig.NO_FACTION);
                 return false;
             }
@@ -49,33 +49,42 @@ public class ShieldCmd implements CommandExecutor {
             return false;
         }
 
-        // Not setting region, must be a faction shield lookup...
         if(!args[0].equalsIgnoreCase("setregion")) {
-            final String factionLookup = args[0];
-            final Faction faction = Factions.getInstance().getByTag(factionLookup);
-
-            // The specified faction has no shield set.
-            if(!shieldHandler.hasShield(faction)) {
-                player.sendMessage(ShieldConfig.SHIELD_LOOKUP_FAILED);
-                return false;
+            switch(args[0].toLowerCase()) {
+                case "reset":
+                    shieldHandler.reset(player);
+                    break;
+                case "resetall":
+                    if(!shieldHandler.hasAdminPermission(player)) {
+                        player.sendMessage(ShieldConfig.NO_PERMISSION);
+                        return false;
+                    }
+                    shieldHandler.resetAll(player);
+                    break;
+                case "forcereset":
+                    if(!shieldHandler.hasAdminPermission(player)) {
+                        player.sendMessage(ShieldConfig.NO_PERMISSION);
+                        return false;
+                    }
+                    if(args.length < 2) {
+                        player.sendMessage("§cDid you mean: §7/fs forcereset <faction>");
+                        return false;
+                    }
+                    final Faction target = Factions.getInstance().getByTag(args[1]);
+                    if(target == null) {
+                        player.sendMessage(ShieldConfig.FACTION_NOT_FOUND);
+                        return false;
+                    }
+                    shieldHandler.forceReset(player, target);
+                    break;
+                default:
+                    lookup(player, args);
+                    break;
             }
-
-            final String time = shieldHandler.getShield(faction).getItemData().getTime();
-            final String[] timeInfo = time.split(" ");
-            final String endTime = plugin.getShieldHandler().getEndTime(timeInfo[1], Integer.parseInt(timeInfo[0]));
-            final String timezone = ShieldConfig.TIMEZONE;
-
-            // Send the lookup message + convert placeholders.
-            player.sendMessage(ShieldConfig.SHIELD_LOOKUP
-                    .replaceAll("%faction%", faction.getTag())
-                    .replaceAll("%start%", time)
-                    .replaceAll("%end%", endTime)
-                    .replaceAll(timezone, "")
-                    .replaceAll("%timezone%", timezone));
             return false;
         }
 
-        if(!hasFaction(fplayer)) {
+        if(!shieldHandler.hasFaction(fplayer)) {
             player.sendMessage(ShieldConfig.NO_FACTION);
             return false;
         }
@@ -111,10 +120,28 @@ public class ShieldCmd implements CommandExecutor {
         return false;
     }
 
-    private boolean hasFaction(FPlayer player) {
-        if(!player.hasFaction() || player.getFaction().isWilderness()) {
-            return false;
+    private void lookup(Player player, String[] args) {
+        final String factionLookup = args[0];
+        final Faction faction = Factions.getInstance().getByTag(factionLookup);
+        final ShieldHandler shieldHandler = FactionShieldsPlugin.getInstance().getShieldHandler();
+
+        // The specified faction has no shield set.
+        if(!shieldHandler.hasShield(faction)) {
+            player.sendMessage(ShieldConfig.SHIELD_LOOKUP_FAILED);
+            return;
         }
-        return true;
+
+        final String time = shieldHandler.getShield(faction).getItemData().getTime();
+        final String[] timeInfo = time.split(" ");
+        final String endTime = shieldHandler.getEndTime(timeInfo[1], Integer.parseInt(timeInfo[0]));
+        final String timezone = ShieldConfig.TIMEZONE;
+
+        // Send the lookup message + convert placeholders.
+        player.sendMessage(ShieldConfig.SHIELD_LOOKUP
+                .replaceAll("%faction%", faction.getTag())
+                .replaceAll("%start%", time)
+                .replaceAll("%end%", endTime)
+                .replaceAll(timezone, "")
+                .replaceAll("%timezone%", timezone));
     }
 }

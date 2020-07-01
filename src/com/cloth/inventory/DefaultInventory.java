@@ -4,7 +4,6 @@ import com.cloth.FactionShieldsPlugin;
 import com.cloth.config.ShieldConfig;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.struct.Role;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

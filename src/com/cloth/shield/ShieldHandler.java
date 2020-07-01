@@ -4,10 +4,15 @@ import com.cloth.FactionShieldsPlugin;
 import com.cloth.config.ShieldConfig;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
+import com.massivecraft.factions.event.FPlayerLeaveEvent;
 import com.massivecraft.factions.event.FactionDisbandEvent;
+import com.massivecraft.factions.struct.Role;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,10 +21,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Brennan on 4/11/2020.
@@ -33,6 +36,7 @@ public class ShieldHandler implements Listener {
     }
 
     private List<FactionShield> factionShields = new ArrayList<>();
+    private Map<UUID, Long> resetPending = new HashMap<>();
 
     public ShieldHandler() {
         updateShields();
@@ -63,6 +67,9 @@ public class ShieldHandler implements Listener {
         }
     }
 
+    /**
+     * Loads the serialized JSON data from shields.json into memory.
+     */
     public void loadAll() {
         FactionShieldsPlugin plugin = FactionShieldsPlugin.getInstance();
         File file = new File(plugin.getDataFolder() + "/shields.json");
@@ -170,6 +177,158 @@ public class ShieldHandler implements Listener {
                 .findFirst().orElse(null);
     }
 
+    /**
+     * Checks if the specified player is in a faction (other than Wilderness)
+     *
+     * @param player the player being checked.
+     * @return whether or not the player has a faction.
+     */
+    public boolean hasFaction(FPlayer player) {
+        if(!player.hasFaction() || player.getFaction().isWilderness()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Called when a player attempts to reset their shield.
+     *
+     * @param commandExecutor the player executing the command.
+     */
+    public void reset(Player commandExecutor) {
+        if(commandExecutor == null) {
+            return;
+        }
+
+        final FPlayer fplayer = FPlayers.getInstance().getByPlayer(commandExecutor);
+
+        if(!hasFaction(fplayer)) {
+            commandExecutor.sendMessage(ShieldConfig.NO_FACTION);
+            return;
+        }
+
+        final Role role = fplayer.getRole();
+        if(role != Role.LEADER && role != Role.COLEADER) {
+            commandExecutor.sendMessage(ShieldConfig.NO_FACTION_PERMISSION);
+            return;
+        }
+
+        final ShieldHandler shieldHandler = FactionShieldsPlugin.getInstance().getShieldHandler();
+        if(!shieldHandler.hasShield(commandExecutor)) {
+            commandExecutor.sendMessage(ShieldConfig.REGION_SHIELD_FAILURE);
+            return;
+        }
+
+        FactionShield shield = shieldHandler.getShield(commandExecutor);
+        long total = (1000 * 60 * 60 * ShieldConfig.SHIELD_RESET_COOLDOWN);
+        long elapsed = System.currentTimeMillis() - shield.getSelectionTime();
+        long difference = total - elapsed;
+
+        if(difference > 0) {
+            String timeRemaining = String.format("%dh %dm %ds",
+                    TimeUnit.MILLISECONDS.toHours(difference) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(difference)),
+                    TimeUnit.MILLISECONDS.toMinutes(difference) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)),
+                    TimeUnit.MILLISECONDS.toSeconds(difference) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(difference))
+            );
+            commandExecutor.sendMessage(ShieldConfig.SHIELD_RESET_FAIL.replaceAll("%time%", timeRemaining));
+            return;
+        }
+
+        if(nearbyEnemyPlayers(shield)) {
+            commandExecutor.sendMessage(ShieldConfig.SHIELD_RESET_PREVENT);
+            return;
+        }
+
+        commandExecutor.sendMessage(ShieldConfig.SHIELD_RESET_SUCCESS);
+        shield.destroy();
+    }
+
+    /**
+     * Force reset's a players faction shield, ignores the required 24 hour cooldown.
+     *
+     * @param commandSender the player attempting to force reset someone's shield.
+     * @param target the faction whose shield is being reset.
+     */
+    public void forceReset(Player commandSender, Faction target) {
+        if(target == null) {
+            return;
+        }
+
+        FactionShield shield;
+        if((shield = getShield(target)) == null) {
+            if(commandSender != null) {
+                commandSender.sendMessage(ShieldConfig.SHIELD_LOOKUP_FAILED);
+            }
+            return;
+        }
+
+        if(commandSender != null) {
+            commandSender.sendMessage(ShieldConfig.SHIELD_FORCE_RESET.replaceAll("%faction%", shield.getFaction().getTag()));
+        }
+
+        shield.destroy();
+    }
+
+    /**
+     * Reset's ALL faction shields on the server.
+     *
+     * @param commandSender the player attempting to reset all shields.
+     */
+    public void resetAll(Player commandSender) {
+        if(commandSender != null) {
+            final UUID uuid = commandSender.getUniqueId();
+            if(resetPending.containsKey(uuid)) {
+                long elapsed = (System.currentTimeMillis() - resetPending.get(uuid)) / 1000;
+                if(elapsed <= 10) {
+                    for(int i = factionShields.size() - 1; i >= 0; i--) {
+                        FactionShield shield = factionShields.get(i);
+                        shield.destroy();
+                    }
+                    resetPending.remove(uuid);
+                    commandSender.sendMessage(ShieldConfig.SHIELD_RESET_ALL);
+                    return;
+                }
+            }
+            resetPending.put(uuid, System.currentTimeMillis());
+            commandSender.sendMessage("§cAre you sure you want to reset ALL shields?");
+            commandSender.sendMessage("§cRetype the command within 10 seconds to confirm.");
+        }
+    }
+
+    /**
+     * Checks if there are any enemy players near the specified faction shield.
+     *
+     * @param shield the shield whose shield region is being checked.
+     * @return whether or not enemy players are nearby.
+     */
+    private boolean nearbyEnemyPlayers(FactionShield shield) {
+        // The location object at index 0 is the center.
+        FLocation chunk = shield.getRegion().get(0);
+
+        // Create a location object using an arbitrary y-axis.
+        Location region = new Location(chunk.getWorld(), chunk.getX(), 100, chunk.getZ());
+
+        final int radius = ShieldConfig.SHIELD_RESET_RADIUS;
+        final List<Player> online = shield.getFaction().getOnlinePlayers();
+
+        // Loop through nearby players. Are any of them NOT in the faction?
+        for(Entity entity : chunk.getWorld().getNearbyEntities(region, radius, radius, radius)) {
+            if(entity instanceof Player && !online.contains(entity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the specified player has admin permission.
+     *
+     * @param player the player whose permission is being checked.
+     * @return whether or not the player has admin permission.
+     */
+    public boolean hasAdminPermission(Player player) {
+        return player.isOp() || player.hasPermission("factionshields.admin");
+    }
 
     /**
      * Gets the time that the shield will end after activation.

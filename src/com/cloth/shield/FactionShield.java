@@ -45,6 +45,7 @@ public class FactionShield implements Listener {
     private ItemData itemData;
     private boolean enabled;
     private long lastActivation;
+    private long selectionTime;
     private String waiting;
     private String inventoryBase64;
     private String lastElapsedString;
@@ -56,6 +57,7 @@ public class FactionShield implements Listener {
         this.itemData = data;
         this.enabled = false;
         this.lastActivation = -1;
+        this.selectionTime = System.currentTimeMillis();
         this.waiting = " §8- §7Waiting for " + this.itemData.getTime() + "§7...";
         this.destroyed = false;
         this.region = new ArrayList<>();
@@ -82,8 +84,6 @@ public class FactionShield implements Listener {
      */
     public void destroy() {
         final FactionShieldsPlugin plugin = FactionShieldsPlugin.getInstance();
-        final Faction faction = getFaction();
-
         plugin.unregisterListener(this);
         plugin.getShieldHandler().removeShield(this);
         this.destroyed = true;
@@ -312,5 +312,9 @@ public class FactionShield implements Listener {
         FLocation d = location.getRelative(0, -1);
 
         return Arrays.asList(a, b, c, d);
+    }
+
+    public long getSelectionTime() {
+        return selectionTime;
     }
 }
