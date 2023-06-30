@@ -8,9 +8,8 @@ import com.massivecraft.factions.FLocation;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
-import com.massivecraft.factions.event.FPlayerLeaveEvent;
 import com.massivecraft.factions.event.FactionDisbandEvent;
-import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.perms.Role;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,10 +17,21 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -208,7 +218,7 @@ public class ShieldHandler implements Listener {
         }
 
         final Role role = fplayer.getRole();
-        if(role != Role.LEADER && role != Role.COLEADER) {
+        if(role != Role.ADMIN && role != Role.COLEADER) {
             commandExecutor.sendMessage(ShieldConfig.NO_FACTION_PERMISSION);
             return;
         }

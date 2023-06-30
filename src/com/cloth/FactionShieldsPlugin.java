@@ -24,7 +24,7 @@ public class FactionShieldsPlugin extends JavaPlugin {
     public void onEnable() {
         // Register placeholders.
         if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
-            new ShieldExpansion().register();
+            new ShieldExpansion(this).register();
         }
 
         instance = this;

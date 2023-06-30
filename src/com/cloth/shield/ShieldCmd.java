@@ -3,8 +3,8 @@ package com.cloth.shield;
 import com.cloth.FactionShieldsPlugin;
 import com.cloth.config.ShieldConfig;
 import com.massivecraft.factions.*;
-import com.massivecraft.factions.struct.Relation;
-import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.perms.Relation;
+import com.massivecraft.factions.perms.Role;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -90,7 +90,7 @@ public class ShieldCmd implements CommandExecutor {
         }
 
         final Role role = fplayer.getRole();
-        if(role != Role.LEADER && role != Role.COLEADER) {
+        if(role != Role.ADMIN && role != Role.COLEADER) {
             player.sendMessage(ShieldConfig.NO_FACTION_PERMISSION);
             return false;
         }

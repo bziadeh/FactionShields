@@ -4,7 +4,7 @@ import com.cloth.FactionShieldsPlugin;
 import com.cloth.config.ShieldConfig;
 import com.massivecraft.factions.FPlayer;
 import com.massivecraft.factions.FPlayers;
-import com.massivecraft.factions.struct.Role;
+import com.massivecraft.factions.perms.Role;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -68,7 +68,7 @@ public class DefaultInventory implements Listener {
 
             buttons.forEach(item -> {
                 if(item.getSlot() == event.getSlot()) {
-                    if(fplayer.getRole() != Role.LEADER && fplayer.getRole() != Role.COLEADER) {
+                    if(fplayer.getRole() != Role.ADMIN && fplayer.getRole() != Role.COLEADER) {
                         player.sendMessage(ShieldConfig.NO_FACTION_PERMISSION);
                         player.closeInventory();
                         return;

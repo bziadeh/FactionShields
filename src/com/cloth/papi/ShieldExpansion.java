@@ -4,24 +4,21 @@ import com.cloth.FactionShieldsPlugin;
 import com.cloth.config.ShieldConfig;
 import com.cloth.shield.FactionShield;
 import com.cloth.shield.ShieldHandler;
-import com.massivecraft.factions.FPlayers;
 import com.massivecraft.factions.Faction;
 import com.massivecraft.factions.Factions;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import static sun.audio.AudioPlayer.player;
-
 /**
  * Created by Brennan on 7/1/2020.
  */
 public class ShieldExpansion extends PlaceholderExpansion {
 
-    private FactionShieldsPlugin plugin;
+    private final FactionShieldsPlugin plugin;
 
-    public ShieldExpansion() {
-        this.plugin = FactionShieldsPlugin.getInstance();
+    public ShieldExpansion(FactionShieldsPlugin plugin) {
+        this.plugin = plugin;
     }
 
     @Override
@@ -54,7 +51,7 @@ public class ShieldExpansion extends PlaceholderExpansion {
         final ShieldHandler shieldHandler = FactionShieldsPlugin.getInstance().getShieldHandler();
         final String tag = ChatColor.stripColor(params);
 
-        if(player == null) {
+        if(p == null) {
             return "";
         }
 
